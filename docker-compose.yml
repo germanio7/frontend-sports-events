@@ -1,0 +1,11 @@
+# La API es el compose de go-sports-events (publicado en :83 del host).
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-84}:80"
+    environment:
+      API_URL: ${API_URL:-http://host.docker.internal:83}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

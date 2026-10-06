@@ -1,0 +1,277 @@
+@import 'tailwindcss';
+
+@theme {
+    --font-mono: 'SF Mono', 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'IBM Plex Mono', Consolas, 'Liberation Mono', monospace;
+}
+
+/* === cliamp inspired palette === */
+:root {
+    /* forcing single dark world — CLIAMP is dark by nature */
+    color-scheme: dark;
+
+    --ink: #080a08;
+    --ink-2: #0b0d0a;
+    --panel: #111410;
+    --panel-2: #171b14;
+    --panel-3: #1e231a;
+    --bevel-hi: rgba(190, 255, 210, 0.05);
+    --bevel-lo: rgba(0, 0, 0, 0.55);
+    --line: #262c20;
+    --line-hi: #39422f;
+
+    --fg: #c3c7ba;
+    --fg-hi: #e9ece0;
+    --fg-max: #fbfdf5;
+    --mute: #6e7566;
+    --mute-2: #474d40;
+
+    --green: #37f5a0;
+    --green-hi: #8bffc6;
+    --green-glow: rgba(55, 245, 160, 0.35);
+    --green-dim: rgba(55, 245, 160, 0.1);
+
+    --amber: #ffb454;
+    --amber-hi: #ffd39a;
+    --amber-glow: rgba(255, 180, 84, 0.32);
+    --amber-dim: rgba(255, 180, 84, 0.1);
+
+    --cyan: #4fd6ff;
+    --red: #ff5d6c;
+
+}
+
+@layer base {
+    * {
+        border-color: var(--line);
+    }
+
+    html,
+    body {
+        background-color: var(--ink);
+        color: var(--fg);
+        font-family: var(--font-mono);
+        font-size: 14px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        background-image:
+            radial-gradient(120% 80% at 12% -5%, rgba(55, 245, 160, 0.05), transparent 55%),
+            radial-gradient(120% 90% at 88% 110%, rgba(255, 180, 84, 0.045), transparent 55%),
+            radial-gradient(140% 120% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+        /* ponytail: sin background-attachment fixed — repinta en cada scroll en GPUs débiles */
+    }
+
+    ::selection {
+        background: var(--green);
+        color: var(--ink);
+    }
+
+    a {
+        color: var(--cyan);
+    }
+
+    a:hover {
+        color: var(--amber-hi);
+    }
+}
+
+/* === shared terminal primitives === */
+.tty-frame {
+    position: relative;
+    border-radius: 14px;
+    padding: 14px;
+    background: linear-gradient(155deg, #20261b, #0c0f0a);
+    box-shadow:
+        inset 0 1px 0 var(--bevel-hi),
+        0 30px 70px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+.tty-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 8px 12px;
+    font-size: 11px;
+}
+
+.tty-prompt {
+    color: var(--green);
+    font-weight: 800;
+}
+
+.tty-cmd {
+    color: var(--fg-hi);
+    font-weight: 700;
+}
+
+.tty-flag {
+    color: var(--mute);
+}
+
+.tty-pid {
+    color: var(--mute-2);
+    letter-spacing: 1px;
+    margin-left: auto;
+}
+
+.tty-body {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 16px 18px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--fg);
+    border: 1px solid #000;
+    background: radial-gradient(120% 120% at 50% 0%, rgba(55, 245, 160, 0.05), transparent 55%), #060806;
+}
+
+/* section header strip (idx + name + rule + meter) */
+.strip {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+.strip-idx {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--amber);
+    padding: 5px 9px;
+    border: 1px solid var(--line-hi);
+    border-radius: 3px;
+    background: linear-gradient(to bottom, var(--panel-2), var(--panel));
+    box-shadow:
+        0 1px 0 var(--bevel-hi),
+        inset 0 0 8px rgba(0, 0, 0, 0.4);
+    text-shadow: 0 0 10px var(--amber-glow);
+}
+.strip-name {
+    font-size: clamp(22px, 3.4vw, 30px);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--fg-hi);
+    text-shadow:
+        0 1px 0 var(--bevel-hi),
+        0 -1px 1px var(--bevel-lo);
+}
+.strip-name em {
+    font-style: normal;
+    color: var(--green);
+    text-shadow: 0 0 16px var(--green-glow);
+}
+.strip-rule {
+    flex: 1;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(to right, var(--line-hi), var(--line) 55%, transparent);
+    box-shadow: 0 1px 0 var(--bevel-hi);
+}
+.strip-meter {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 20px;
+}
+/* ponytail: barras estáticas — la animación de height fuerza layout por frame */
+.strip-meter i {
+    width: 3px;
+    height: 12px;
+    background: var(--green);
+    opacity: 0.8;
+    border-radius: 1px;
+    box-shadow: 0 0 6px var(--green-glow);
+}
+.strip-meter i:nth-child(3),
+.strip-meter i:nth-child(4) {
+    background: var(--amber);
+    box-shadow: 0 0 6px var(--amber-glow);
+}
+.strip-meter i:nth-child(5) {
+    background: var(--red);
+    box-shadow: 0 0 6px rgba(255, 93, 108, 0.4);
+}
+
+/* terminal panel card */
+.panel {
+    background: linear-gradient(to bottom, var(--panel-2), var(--panel));
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow:
+        0 1px 0 var(--bevel-hi),
+        0 -1px 1px var(--bevel-lo);
+    transition:
+        transform 0.15s,
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+.panel:hover {
+    border-color: var(--line-hi);
+    box-shadow:
+        0 0 18px rgba(0, 0, 0, 0.45),
+        0 1px 0 var(--bevel-hi),
+        0 -1px 1px var(--bevel-lo);
+}
+
+/* key/value rows in cards */
+.kv {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 12.5px;
+}
+.kv .k {
+    color: var(--mute);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.kv .v {
+    color: var(--fg-hi);
+}
+
+/* buttons go/ghost */
+.btn-go {
+    color: var(--ink);
+    border: 1px solid var(--green);
+    background: linear-gradient(to bottom, var(--green-hi), var(--green));
+    box-shadow:
+        0 0 20px var(--green-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.btn-go:hover {
+    box-shadow:
+        0 0 34px var(--green-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.btn-ghost {
+    color: var(--fg-hi);
+    background: linear-gradient(to bottom, var(--panel-2), var(--panel));
+    border: 1px solid var(--line-hi);
+    box-shadow:
+        0 1px 0 var(--bevel-hi),
+        0 -1px 1px var(--bevel-lo);
+}
+.btn-ghost:hover {
+    color: var(--green);
+    border-color: var(--green);
+    text-shadow: 0 0 10px var(--green-glow);
+}
+
+.kbd {
+    color: var(--ink);
+    background: var(--fg-hi);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* scrollbar — keep it terminal */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-hi) var(--ink);
+}

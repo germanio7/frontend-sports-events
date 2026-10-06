@@ -1,0 +1,16 @@
+server {
+    listen 80;
+    root /usr/share/nginx/html;
+
+    # La API Go no manda CORS: va por el mismo origen.
+    location /api/ {
+        proxy_pass ${API_URL};
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Host $http_host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / {
+        try_files $uri /index.html;
+    }
+}
