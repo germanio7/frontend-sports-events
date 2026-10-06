@@ -4,7 +4,7 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - "${WEB_PORT:-84}:80"
+      - "${WEB_PORT:-84}:84"
     environment:
       API_URL: ${API_URL:-http://host.docker.internal:83}
     extra_hosts:
