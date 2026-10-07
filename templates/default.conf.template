@@ -2,6 +2,15 @@ server {
     listen 80;
     root /usr/share/nginx/html;
 
+    gzip on;
+    gzip_types text/css application/javascript image/svg+xml application/json;
+
+    # Vite pone hash en el nombre: cache para siempre.
+    location /assets/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
     # La API Go no manda CORS: va por el mismo origen.
     location /api/ {
         proxy_pass ${API_URL};

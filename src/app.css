@@ -28,7 +28,6 @@
     --green: #37f5a0;
     --green-hi: #8bffc6;
     --green-glow: rgba(55, 245, 160, 0.35);
-    --green-dim: rgba(55, 245, 160, 0.1);
 
     --amber: #ffb454;
     --amber-hi: #ffd39a;
@@ -257,17 +256,6 @@
     color: var(--green);
     border-color: var(--green);
     text-shadow: 0 0 10px var(--green-glow);
-}
-
-.kbd {
-    color: var(--ink);
-    background: var(--fg-hi);
-    padding: 1px 6px;
-    border-radius: 3px;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 800;
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 }
 
 /* scrollbar — keep it terminal */

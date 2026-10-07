@@ -10,8 +10,8 @@ import Welcome from './pages/welcome';
 const routes: Record<string, () => React.ReactNode> = {
     '/': () => <Welcome />,
     '/opcion-1': () => <Events />,
-    '/opcion-2': () => <Agenda key="2" n="2" endpoint="/api/pelota/agenda" source="futbollibrehd.me" />,
-    '/opcion-3': () => <Agenda key="3" n="3" endpoint="/api/juanita/agenda" source="pelisjuanita.com" />,
+    '/opcion-2': () => <Agenda n="2" endpoint="/api/pelota/agenda" source="futbollibrehd.me" />,
+    '/opcion-3': () => <Agenda n="3" endpoint="/api/juanita/agenda" source="pelisjuanita.com" />,
 };
 
 const path = location.pathname.replace(/\/+$/, '') || '/';

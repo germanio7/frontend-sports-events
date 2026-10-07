@@ -46,7 +46,7 @@ export default function Layout({ children, title }: { children: ReactNode; title
             </nav>
 
             <main className="relative z-10 mx-auto flex w-full max-w-[1080px] flex-1 flex-col px-5 py-12 md:px-10">
-                <h1 className="sr-only">{title}</h1>
+                {title !== 'Eventos Deportivos' && <h1 className="sr-only">{title}</h1>}
                 {children}
             </main>
 

@@ -1,5 +1,4 @@
-import Hls from 'hls.js';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export type StreamType = 'hls' | 'video' | 'embed';
 export type Stream = { url: string; title: string; type: StreamType };
@@ -13,17 +12,38 @@ export const streamType = (url: string, fallback: StreamType): StreamType => {
 
 export default function Player({ stream, onClose }: { stream: Stream; onClose: () => void }) {
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [failed, setFailed] = useState(false);
 
     useEffect(() => {
         const video = videoRef.current;
+        setFailed(false);
         if (stream.type === 'embed' || !video) return;
-        if (stream.type === 'hls' && Hls.isSupported()) {
-            const hls = new Hls({ enableWorker: true, lowLatencyMode: true });
-            hls.loadSource(stream.url);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => void video.play().catch(() => undefined));
-            hls.on(Hls.Events.ERROR, (_, data) => data.fatal && hls.destroy());
-            return () => hls.destroy();
+        // hls.js (~500 kB) se baja solo al reproducir HLS; sin MSE cae al HLS nativo del <video>.
+        if (stream.type === 'hls') {
+            let hls: import('hls.js').default | undefined;
+            let cancelled = false;
+            import('hls.js').then(({ default: Hls }) => {
+                if (cancelled) return;
+                if (!Hls.isSupported()) {
+                    video.src = stream.url;
+                    return void video.play().catch(() => undefined);
+                }
+                hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+                hls.loadSource(stream.url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => void video.play().catch(() => undefined));
+                hls.on(Hls.Events.ERROR, (_, data) => {
+                    if (!data.fatal) return;
+                    hls?.destroy();
+                    setFailed(true);
+                });
+            });
+            return () => {
+                cancelled = true;
+                hls?.destroy();
+                video.pause();
+                video.removeAttribute('src');
+            };
         }
         video.src = stream.url;
         video.play().catch(() => undefined);
@@ -72,7 +92,12 @@ export default function Player({ stream, onClose }: { stream: Stream; onClose: (
                                 ✕ detener
                             </button>
                         </div>
-                        <div className="aspect-video bg-black">
+                        <div className="relative aspect-video bg-black">
+                            {failed && (
+                                <div className="absolute inset-0 z-10 flex items-center justify-center bg-black text-[12.5px] text-[var(--red)]">
+                                    ▒ stream caído, probá otra opción
+                                </div>
+                            )}
                             {stream.type === 'embed' ? (
                                 <iframe
                                     src={stream.url}
@@ -82,7 +107,7 @@ export default function Player({ stream, onClose }: { stream: Stream; onClose: (
                                     allowFullScreen
                                 />
                             ) : (
-                                <video ref={videoRef} className="h-full w-full" controls autoPlay playsInline>
+                                <video ref={videoRef} className="h-full w-full" controls autoPlay playsInline onError={() => setFailed(true)}>
                                     Tu navegador no soporta el elemento de video.
                                 </video>
                             )}

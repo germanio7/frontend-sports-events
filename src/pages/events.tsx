@@ -8,15 +8,6 @@ type Source = { id: string; source: string; options?: StreamOption[]; loaded?: b
 type Event = { id: string; name: string; image: string; date: string | null; category?: string | null; sources: Source[] };
 type Sport = { id: string; label: string };
 
-const FALLBACK_SPORTS: Sport[] = [
-    { id: 'football', label: 'Fútbol' },
-    { id: 'basketball', label: 'Básquet' },
-    { id: 'tennis', label: 'Tenis' },
-    { id: 'motor-sports', label: 'Motor' },
-    { id: 'rugby', label: 'Rugby' },
-    { id: 'fight', label: 'UFC/Box' },
-];
-
 // ponytail: mapa chico es-AR; si no está, el nombre upstream capitalizado.
 const SPORT_LABELS: Record<string, string> = {
     football: 'Fútbol',
@@ -34,6 +25,10 @@ const SPORT_LABELS: Record<string, string> = {
     'table-tennis': 'Tenis de mesa',
 };
 
+const FALLBACK_SPORTS: Sport[] = Object.entries(SPORT_LABELS)
+    .slice(0, 6)
+    .map(([id, label]) => ({ id, label }));
+
 const formatDate = (date: string | null) =>
     date
         ? new Date(date).toLocaleString('es-AR', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
@@ -42,6 +37,7 @@ const formatDate = (date: string | null) =>
 export default function Events() {
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
     const [loadingSourceId, setLoadingSourceId] = useState<string | null>(null);
     const [sports, setSports] = useState<Sport[]>(FALLBACK_SPORTS);
     const [sport, setSport] = useState(FALLBACK_SPORTS[0].id);
@@ -66,11 +62,12 @@ export default function Events() {
         const controller = new AbortController();
         setEvents([]);
         setLoading(true);
+        setError(false);
         const params = new URLSearchParams({ sport, live: String(liveOnly), popular: String(popularOnly) });
         fetch(`/api/events?${params}`, { signal: controller.signal })
             .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
             .then((data: Event[]) => setEvents(data ?? []))
-            .catch(() => undefined)
+            .catch((err) => err.name !== 'AbortError' && setError(true))
             .finally(() => !controller.signal.aborted && setLoading(false));
         return () => controller.abort();
     }, [sport, liveOnly, popularOnly]);
@@ -131,6 +128,8 @@ export default function Events() {
 
                     {loading ? (
                         <SkeletonGrid />
+                    ) : error ? (
+                        <div className="rounded border border-[var(--red)]/40 bg-[var(--red)]/10 px-4 py-3 text-[12.5px] text-[var(--red)]">▒ no se pudieron obtener los eventos</div>
                     ) : events.length === 0 ? (
                         <EmptyState liveOnly={liveOnly} popularOnly={popularOnly} sport={sport} />
                     ) : (
