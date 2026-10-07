@@ -13,6 +13,8 @@ type AgendaEvent = {
     channel: string | null;
     quality: string | null;
     options: AgendaOption[] | null;
+    homeLogo?: string;
+    awayLogo?: string;
 };
 
 // ponytail: heurística para una agenda que cruza medianoche (22:10, 23:30, 00:15 sin fecha):
@@ -108,8 +110,10 @@ function MatchRow({ event, onPlay }: { event: AgendaEvent; onPlay: (url: string,
     return (
         <article className="panel p-3">
             <div className="text-[12.5px] font-bold text-[var(--fg-hi)]">
+                <Logo src={event.homeLogo} />
                 <span>{event.home}</span>
                 <span className="mx-2 text-[var(--mute)]">vs</span>
+                <Logo src={event.awayLogo} />
                 <span>{event.away}</span>
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-2 text-[10.5px] tracking-[1px] text-[var(--mute)] uppercase">
@@ -138,5 +142,21 @@ function MatchRow({ event, onPlay }: { event: AgendaEvent; onPlay: (url: string,
                 </div>
             )}
         </article>
+    );
+}
+
+// alt vacío: el nombre del equipo ya está al lado. Si falla, se oculta.
+function Logo({ src }: { src?: string }) {
+    if (!src) return null;
+    return (
+        <img
+            src={src}
+            alt=""
+            width={20}
+            height={20}
+            loading="lazy"
+            className="mr-1.5 inline-block h-5 w-5 object-contain align-[-5px]"
+            onError={(e) => (e.currentTarget.style.display = 'none')}
+        />
     );
 }
