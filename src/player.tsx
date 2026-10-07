@@ -99,6 +99,7 @@ export default function Player({ stream, onClose }: { stream: Stream; onClose: (
                                 </div>
                             )}
                             {stream.type === 'embed' ? (
+                                // sin sandbox: embed.st, tvf90.com y streamx305.sbs lo detectan y no cargan (probado 2026-10).
                                 <iframe
                                     src={stream.url}
                                     title={stream.title}
