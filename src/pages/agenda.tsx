@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import Layout, { Notice, Strip } from '../layout';
-import Player, { streamType, type Stream } from '../player';
+import Player, { type Stream } from '../player';
 
 type AgendaOption = { source: string; quality: string | null; url: string; embed: string };
 
@@ -45,7 +45,9 @@ export default function Agenda({ n, endpoint, source }: { n: string; endpoint: s
     }, [endpoint]);
 
     const sorted = [...events].sort((a, b) => timeToSortKey(a.time) - timeToSortKey(b.time));
-    const play = (url: string, title: string) => setStream({ url, title, type: streamType(url, 'embed') });
+    // .m3u8 resuelto por la API → hls.js, sin la página del embed (ni sus ads). Si no resuelve, cae al embed.
+    const play = (embed: string, title: string) =>
+        setStream({ url: `/api/juanita/stream?u=${encodeURIComponent(embed)}`, title, type: 'hls', fallback: embed });
 
     return (
         <Layout title={`Opción ${n}`}>

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 
 export type StreamType = 'hls' | 'video' | 'embed';
-export type Stream = { url: string; title: string; type: StreamType };
+// fallback: embed a usar si el HLS falla (con sus ads, pero mejor que nada).
+export type Stream = { url: string; title: string; type: StreamType; fallback?: string };
 
 export const streamType = (url: string, fallback: StreamType): StreamType => {
     const lower = url.toLowerCase();
@@ -13,6 +14,7 @@ export const streamType = (url: string, fallback: StreamType): StreamType => {
 export default function Player({ stream, onClose }: { stream: Stream; onClose: () => void }) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [failed, setFailed] = useState(false);
+    const embed = stream.type === 'embed' ? stream.url : failed ? stream.fallback : undefined;
 
     useEffect(() => {
         const video = videoRef.current;
@@ -93,15 +95,15 @@ export default function Player({ stream, onClose }: { stream: Stream; onClose: (
                             </button>
                         </div>
                         <div className="relative aspect-video bg-black">
-                            {failed && (
+                            {failed && !stream.fallback && (
                                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-black text-[12.5px] text-[var(--red)]">
                                     ▒ stream caído, probá otra opción
                                 </div>
                             )}
-                            {stream.type === 'embed' ? (
+                            {embed ? (
                                 // sin sandbox: embed.st, tvf90.com y streamx305.sbs lo detectan y no cargan (probado 2026-10).
                                 <iframe
-                                    src={stream.url}
+                                    src={embed}
                                     title={stream.title}
                                     className="h-full w-full"
                                     allow="autoplay; fullscreen; picture-in-picture;"

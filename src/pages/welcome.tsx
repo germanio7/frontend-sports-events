@@ -36,6 +36,12 @@ export default function Welcome() {
                     >
                         ▸ opción 3
                     </a>
+                    <a
+                        href="/resultados"
+                        className="btn-ghost inline-flex items-center gap-2 rounded px-6 py-3 text-[12px] font-bold tracking-[2px] uppercase"
+                    >
+                        ▸ resultados
+                    </a>
                 </div>
             </section>
         </Layout>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import Layout, { Notice, Strip } from '../layout';
+import Layout, { FilterChip, Notice, Strip } from '../layout';
 import Player, { streamType, type Stream } from '../player';
 
 type StreamOption = { url: string; language: string; id: string; hd: 'HD' | 'SD' };
@@ -157,23 +157,6 @@ export default function Events() {
 
             {stream && <Player stream={stream} onClose={() => setStream(null)} />}
         </Layout>
-    );
-}
-
-function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-    return (
-        <button
-            type="button"
-            onClick={onClick}
-            className={
-                'rounded border px-3 py-1.5 text-[12px] font-bold tracking-[1px] uppercase transition-all ' +
-                (active
-                    ? 'border-[var(--green)] bg-[var(--green)]/15 text-[var(--green)] [text-shadow:0_0_8px_var(--green-glow)]'
-                    : 'border-[var(--line-hi)] bg-[var(--panel)] text-[var(--mute)] hover:border-[var(--green)] hover:text-[var(--green)]')
-            }
-        >
-            {children}
-        </button>
     );
 }
 

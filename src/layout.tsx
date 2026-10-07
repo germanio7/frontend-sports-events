@@ -5,6 +5,7 @@ const navItems = [
     { href: '/opcion-1', label: 'Opción 1' },
     { href: '/opcion-2', label: 'Opción 2' },
     { href: '/opcion-3', label: 'Opción 3' },
+    { href: '/resultados', label: 'Resultados' },
 ];
 
 export default function Layout({ children, title }: { children: ReactNode; title: string }) {
@@ -18,12 +19,13 @@ export default function Layout({ children, title }: { children: ReactNode; title
             <nav className="sticky top-0 z-50 border-b border-[var(--line)] bg-[rgba(9,11,8,0.92)]">
                 {/* ponytail: sin backdrop-blur — cuesta un composite por scroll en smart TV */}
                 <div className="mx-auto flex h-[58px] max-w-[1080px] items-center justify-between gap-4 px-5 md:px-10">
-                    <a href="/" className="flex items-center gap-3 font-bold tracking-[3px] text-[var(--fg-hi)]">
+                    <a href="/" className="flex shrink-0 items-center gap-3 font-bold tracking-[3px] text-[var(--fg-hi)]">
                         <span>
                             Eventos <b className="text-[var(--green)] drop-shadow-[0_0_12px_var(--green-glow)]">Deportivos</b>
                         </span>
                     </a>
-                    <div className="flex items-center gap-1">
+                    {/* en celular no entran los 5 ítems: scroll horizontal en vez de cortarlos */}
+                    <div className="flex min-w-0 items-center gap-1 overflow-x-auto [scrollbar-width:none]">
                         {navItems.map((item) => {
                             const active = url === item.href || (item.href !== '/' && url.startsWith(item.href));
                             return (
@@ -31,7 +33,7 @@ export default function Layout({ children, title }: { children: ReactNode; title
                                     key={item.href}
                                     href={item.href}
                                     className={
-                                        'rounded px-3 py-2 text-[10px] font-bold tracking-[2px] uppercase transition-colors ' +
+                                        'shrink-0 rounded px-3 py-2 text-[10px] font-bold tracking-[2px] whitespace-nowrap uppercase transition-colors ' +
                                         (active
                                             ? 'text-[var(--green)] [text-shadow:0_0_10px_var(--green-glow)]'
                                             : 'text-[var(--mute)] hover:text-[var(--green)]')
@@ -88,5 +90,22 @@ export function Notice({ children }: { children: ReactNode }) {
             <span className="mr-2 font-bold tracking-[2px] text-[var(--amber)] uppercase">▸ aviso</span>
             {children}
         </div>
+    );
+}
+
+export function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={
+                'rounded border px-3 py-1.5 text-[12px] font-bold tracking-[1px] uppercase transition-all ' +
+                (active
+                    ? 'border-[var(--green)] bg-[var(--green)]/15 text-[var(--green)] [text-shadow:0_0_8px_var(--green-glow)]'
+                    : 'border-[var(--line-hi)] bg-[var(--panel)] text-[var(--mute)] hover:border-[var(--green)] hover:text-[var(--green)]')
+            }
+        >
+            {children}
+        </button>
     );
 }
