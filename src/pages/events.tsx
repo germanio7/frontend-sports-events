@@ -97,8 +97,8 @@ export default function Events() {
     const play = (url: string, title: string) => setStream({ url, title, type: streamType(url, /embed|iframe|player/i.test(url) ? 'embed' : 'hls') });
 
     return (
-        <Layout title="Opción 1">
-            <Strip index="01" name="opcion" highlight="1" />
+        <Layout title="Opción 3">
+            <Strip index="03" name="opcion" highlight="3" />
 
             <div className="tty-frame mb-10">
                 <div className="tty-head">
